@@ -9,12 +9,18 @@ import { FaLongArrowAltRight, FaRupeeSign, FaUser, FaHeart} from "react-icons/fa
 import { BsCart2, BsCurrencyDollar, BsGraphUpArrow } from "react-icons/bs";
 import {useParams} from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
+import { Link } from 'react-router-dom';
 import Cart from './Cart';
+import { useSelector, useDispatch } from 'react-redux';
+import { incrementVal, decrement, addToCart } from "./App/reducer/counterSlice";
 
 
 function Single_product(){
 
     const {id} = useParams();
+
+    const count= useSelector((state)=> state.counter.value);
+    const dispatch = useDispatch();
 
     const [product,setProduct]= useState({"thumbnail":"", "image":[]});
     const [message, setMessage] = useState("");
@@ -36,6 +42,8 @@ function Single_product(){
         });
     }, [id]);
 
+    const productId = product.id;
+
         if (!product) {
             return <p>Loading...</p>; 
         }
@@ -45,13 +53,24 @@ function Single_product(){
         };
 
         const AddToCart = () => {
+          
           setCartItems((prevItems) => [...prevItems, product]);
           setMessage('Item added to the cart.');
+
+          dispatch(incrementVal());
+          dispatch(addToCart(product));
+
         };
 
         const handleImage = (image) => {
           setSelectedImage(image);
         };
+
+        const cartClickHandle=()=>{
+          if(cartItems === 0){
+            alert("Yout cart is empty..");
+          }
+        }
       
 
     return(
@@ -110,16 +129,18 @@ function Single_product(){
                       <button>Search</button>
                     </div>
                     <div className="logo_right_info">
-                      <div className="infos"  onClick={() => setCartVisibility(true)}>
-                        <i>
-                          <BsCart2></BsCart2>
-                        </i>
-                        <div className="info">
-                          <span>0 items</span>
-                          <br/>
-                          <strong>My Cart</strong>
-                        </div>
+                    <Link to="/cart">
+                    <div className="infos" onClick={cartClickHandle}>
+                      <i>
+                        <BsCart2></BsCart2>
+                      </i>
+                      <div className="info">
+                        <span>{count} items</span>
+                        <br />
+                        <strong>My Cart</strong>
                       </div>
+                    </div>
+                  </Link>
                     </div>
                   </div>
                 </Container>
@@ -166,9 +187,11 @@ function Single_product(){
                           <div className='qty'>
                             <span>Qty :</span>
                             <a href='#'>1</a>
-                            <button className='Add cart' onClick={AddToCart}>
-                              Add To Cart
-                            </button>
+                            
+                              <button className='Add cart' onClick={AddToCart}>
+                                Add To Cart
+                              </button>
+                            
                           </div>
                           <div className='wishlist'>
                               <i><FaHeart></FaHeart></i><span>Add To Wishlist</span>

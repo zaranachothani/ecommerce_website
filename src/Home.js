@@ -9,7 +9,10 @@ import { IoMdStar } from "react-icons/io";
 import { BsCart2, BsCurrencyDollar } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import Spinner from 'react-bootstrap/Spinner';
+import { useSelector, useDispatch } from 'react-redux';
+import { incrementVal, decrement } from "./App/reducer/counterSlice";
 import Cart from "./Cart";
+
 
 function Home(props) {
   const [data, setdata] = useState([]);
@@ -19,6 +22,10 @@ function Home(props) {
   const [message, setMessage] = useState("");
   const [Loading,setLoading] = useState(true);
   const [cartItems, setCartItems] = useState(0);
+
+  
+  const count= useSelector((state)=> state.counter.value);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     axios
@@ -111,9 +118,11 @@ function Home(props) {
     {
       Loading?(
           <>
-             <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-            </Spinner>
+              <div className="loader">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
           </>
 
       ):(
@@ -171,7 +180,7 @@ function Home(props) {
                         <BsCart2></BsCart2>
                       </i>
                       <div className="info">
-                        <span>0 items</span>
+                        <span>{count} items</span>
                         <br />
                         <strong>My Cart</strong>
                       </div>
@@ -215,7 +224,7 @@ function Home(props) {
                   {product.map((ele, ind) => {
                     return (
                       <>
-                        <Link to={`/product/${ele.id}`} key={ind} target="_blank">
+                        <Link to={`/product/${ele.id}`} key={ind}>
                           <div className="product_inner">
                             <div className="img_block">
                               <img src={ele.thumbnail}></img>

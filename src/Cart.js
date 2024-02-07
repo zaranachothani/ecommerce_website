@@ -1,22 +1,63 @@
 import './App.css';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Table } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { FaLongArrowAltRight, FaRupeeSign, FaUser, FaHeart} from "react-icons/fa";
 // import { TiThMenu } from "react-icons/ti";
 // import { IoMdStar } from "react-icons/io";
 import { BsCart2, BsCurrencyDollar, BsGraphUpArrow } from "react-icons/bs";
-// import {useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 // import Spinner from 'react-bootstrap/Spinner';
+import { useSelector, useDispatch } from 'react-redux';
+import { increment, decrement, addToCart, removeFromCart } from "./App/reducer/counterSlice";
 
-function Cart({cartItems}){
+function Cart(){
+
+  // const {id} = useParams();
+  const { productId } = useParams();
 
   // const [cartItems, setCartItems] = useState([]);
+  const item=useSelector((state)=>state.counter.item);
+  const cartProduct = useSelector((state) => state.counter.cartproduct);
+  const count= useSelector((state)=> state.counter.value);
+  const dispatch = useDispatch();
+
+  console.log(cartProduct);
+
+  // useEffect(() => {
+  //   axios.get(`https://dummyjson.com/products/${productId}`)
+  //     .then(function (response) {
+  //       console.log(response);
+  //       setCartItems(response.data);
+  //     })
+  //     .catch(function (error) {
+  //       console.log(error);
+  //     });
+  // }, [productId]);
+
+    const remove=(index)=>{
+      dispatch(removeFromCart(index));
+    }
+
+    const handleIncrement=(index)=>{
+      dispatch(increment(index));
+    }
+
+    const handledecrement=(index)=>{
+      dispatch(decrement(index));
+    }
 
     const refresh = () => {
         window.location.reload();
     };
+
+    const subtotal = cartProduct.reduce((total, item) => total + item.price * item.qty, 0);
+    const discount = 0.20; // 12% discount
+    const gst = 0.12; // 12% discount
+    const totalWithDiscount = cartProduct.reduce((total, item) => total + (item.price * (1 - discount)) * item.qty, 0);
+    const gstAmount = totalWithDiscount * gst;
+    const totalAmount = totalWithDiscount + gstAmount;
 
     return(
         <>
@@ -70,7 +111,7 @@ function Cart({cartItems}){
                           <BsCart2></BsCart2>
                         </i>
                         <div className="info">
-                          <span>0 items</span>
+                          <span>{count} items</span>
                           <br/>
                           <strong>My Cart</strong>
                         </div>
@@ -93,20 +134,66 @@ function Cart({cartItems}){
             </div>
 
 
-            <Container>
+              <Container>
         <Row>
-          <div>
-          {cartItems && cartItems.length > 0 ? (
-              cartItems.map((item, index) => (
-                <Col key={index} md={4}>
-                  <p>{item.name}</p>
-                  {/* Add more details or components as needed */}
-                </Col>
-              ))
-            ) : (
-              <p>Your cart is empty.</p>
-            )}
-          </div>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>#</th>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              cartProduct.map((ele,ind)=>{
+                return(
+                  <>
+                    <tr className='cart_row'>
+                      <td><button onClick={()=>remove(ele)}>x</button></td>
+                      <td><img src={ele.thumbnail}></img></td>
+                      <td>{ele.title}</td>
+                      <td>${ele.price}</td>
+                      <td><butoon onClick={()=>handleIncrement(ele)}>+</butoon> {ele.qty} <butoon onClick={()=>handledecrement(ele)}>-</butoon></td>
+                      <td>${ele.price * ele.qty}</td>
+                    </tr>
+                  </>
+                )
+              })
+            }
+          </tbody>
+        </Table>
+
+
+        <center>
+            <div className='bill_box'>
+              <h3>CART TOTALS</h3>
+              <Table striped bordered hover className='bill'>
+              <tbody>
+                  <tr>
+                    <th className='head'>Subtotal</th>
+                    <td>{subtotal.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <th className='head'>Discount 20%</th>
+                    <td>{totalWithDiscount.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <th className='head'>GST 12%</th>
+                    <td>{gstAmount.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <th className='head'>Total</th>
+                    <td>{totalAmount.toFixed(2)}</td>
+                  </tr>
+                </tbody>  
+              </Table>
+            </div>
+        </center>
+
         </Row>
       </Container>
 
