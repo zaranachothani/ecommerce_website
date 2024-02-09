@@ -156,9 +156,9 @@ function Cart(){
                       <td><button onClick={()=>remove(ele)}>x</button></td>
                       <td><img src={ele.thumbnail}></img></td>
                       <td>{ele.title}</td>
-                      <td>${ele.price}</td>
+                      <td>$ {ele.price}</td>
                       <td><butoon onClick={()=>handleIncrement(ele)}>+</butoon> {ele.qty} <butoon onClick={()=>handledecrement(ele)}>-</butoon></td>
-                      <td>${ele.price * ele.qty}</td>
+                      <td className='subtotal'>$ {ele.price * ele.qty}</td>
                     </tr>
                   </>
                 )
@@ -175,19 +175,19 @@ function Cart(){
               <tbody>
                   <tr>
                     <th className='head'>Subtotal</th>
-                    <td>{subtotal.toFixed(2)}</td>
+                    <td className='subtotal'>$ {subtotal.toFixed(2)}</td>
                   </tr>
                   <tr>
                     <th className='head'>Discount 20%</th>
-                    <td>{totalWithDiscount.toFixed(2)}</td>
+                    <td className='subtotal'>$ {totalWithDiscount.toFixed(2)}</td>
                   </tr>
                   <tr>
                     <th className='head'>GST 12%</th>
-                    <td>{gstAmount.toFixed(2)}</td>
+                    <td className='subtotal'>$ {gstAmount.toFixed(2)}</td>
                   </tr>
                   <tr>
                     <th className='head'>Total</th>
-                    <td>{totalAmount.toFixed(2)}</td>
+                    <td>$ {totalAmount.toFixed(2)}</td>
                   </tr>
                 </tbody>  
               </Table>
